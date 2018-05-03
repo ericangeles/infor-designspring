@@ -121,7 +121,7 @@
 	</style>
 </head>
 <body>
-	<h1><span class="blue"></span>HNL<span class="blue"></span> <span class="yellow">Web Services</span></h1>
+	<h1><span class="blue"></span>Design Spring<span class="blue"></span> <span class="yellow">Web Services</span></h1>
 	<h2>Hook and Loop Manila</h2>
 	
 	<table class="container">
@@ -190,6 +190,12 @@
 			<td>ResponseEntity</td>
 			<td>File</td>
 			<td>getIconPack()</td>
+		</tr>
+		<tr>
+			<td>GetIconSVC</td>
+			<td>Object</td>
+			<td>Icon</td>
+			<td>getIconInfoById()</td>
 		</tr>
 	</table>
 </body>
