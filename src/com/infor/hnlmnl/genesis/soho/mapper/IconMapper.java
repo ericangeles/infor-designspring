@@ -1,0 +1,68 @@
+package com.infor.hnlmnl.genesis.soho.mapper;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Predicate;
+
+import com.infor.hnlmnl.genesis.soho.dto.Icon;
+import com.infor.hnlmnl.genesis.soho.dto.IconProperty;
+import com.infor.hnlmnl.genesis.soho.dto.IconTag;
+import com.infor.hnlmnl.genesis.soho.dto.IconType;
+import com.infor.hnlmnl.genesis.soho.dto.Product;
+import com.infor.hnlmnl.genesis.soho.utility.Common;
+
+public class IconMapper implements DataMapper {
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public <T> List<T> mapRowsFromQuery(List<Map<String, Object>> resultSet) {
+		// TODO Auto-generated method stub
+		List<Icon> icons = new ArrayList<Icon>();
+		
+		for (Map<String, Object> result : resultSet) {
+			int iconId = (int) result.get(Common.ICON_ID);
+			
+			try {
+				Predicate<Icon> itemPredicator = iconPredicated-> iconPredicated.getIconId() == iconId;
+				Icon iconResult = icons.stream().filter(itemPredicator).findFirst().get();
+				
+				icons.remove(iconResult);
+				
+				if (result.get(Common.TAG_STATUS).toString().equals(Common.ACTIVE)) {
+					int tagId = (int) result.get(Common.TAG_ID);
+					String tagName = (String) result.get(Common.TAG_NAME);
+					iconResult.getTags().add(new IconTag(tagId, tagName));
+				}
+				
+				icons.add(iconResult);
+			} catch (Exception e) {
+				String iconName = (String) result.get(Common.ICON_NAME);
+				int iconCounter = (int) result.get(Common.ICON_COUNTER);
+				String iconStatus = (String) result.get(Common.ICON_STATUS);
+				int typeId = (int) result.get(Common.TYPE_ID);
+				String typeName = (String) result.get(Common.TYPE_NAME);
+				int typeClass = (int) result.get(Common.TYPE_CLASS);
+				String typeSize = (String) result.get(Common.TYPE_SIZE);
+				
+				List<IconTag> tags = new ArrayList<IconTag>();
+				
+				if (result.get(Common.TAG_STATUS).toString().equals(Common.ACTIVE)) {
+					int tagId = (int) result.get(Common.TAG_ID);
+					String tagName = (String) result.get(Common.TAG_NAME);
+					tags.add(new IconTag(tagId, tagName));
+				}
+				
+				List<IconProperty> properties = new ArrayList<IconProperty>();
+				List<Product> products = new ArrayList<Product>();
+				
+				Icon icon = new Icon(iconId, iconName, iconCounter, iconStatus, 
+						new IconType(typeId, typeName, typeClass, 0, typeSize), tags, properties, products);
+				icons.add(icon);
+			}
+		}
+		
+		return (List<T>) icons;
+	}
+	
+}
