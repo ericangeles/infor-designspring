@@ -1,6 +1,6 @@
 <html>
 <head>
-	<title>HNL Web Services - View</title>
+	<title>Design Spring Web Services - View</title>
 	<style type="text/css">
 		@charset "UTF-8";
 		@import url(https://fonts.googleapis.com/css?family=Open+Sans:300,400,700);
