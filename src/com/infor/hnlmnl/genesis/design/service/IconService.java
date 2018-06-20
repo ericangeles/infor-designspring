@@ -19,4 +19,5 @@ public interface IconService {
 	public Icon getIconInfoById(String iconId);
 	public IconDownloadUpdate getDownloadUpdate(String data);
 	public SoHoResponse saveIcon(String data, String mode);
+	public String getIconDisplayImageName(String iconId);
 }
