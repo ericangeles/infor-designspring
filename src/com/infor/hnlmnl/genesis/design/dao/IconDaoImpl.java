@@ -184,7 +184,7 @@ public class IconDaoImpl extends HNLWebDataMapper implements IconDao {
 		try {
 			Map<String, Object> mapData = getCommonMapper().mapRowsFromJSON(data);
 			String sqlIconInfo, sqlIconProduct, sqlIconDownload, sqlIconProperty, sqlIconTag, sql, iconId;
-			int productId = Common.ZERO;
+			String productId = Common.STRING_EMPTY;
 			
 			String iconName = mapData.get(Common.ICON_NAME).toString();
 			int iconType = Integer.parseInt(mapData.get(Common.ICON_TYPE).toString());
@@ -212,17 +212,26 @@ public class IconDaoImpl extends HNLWebDataMapper implements IconDao {
 				Common.getQueryReport("saveIcon", sqlIconProduct);
 
 				String sqlProductId = "SELECT productId FROM tbl_soho_product ORDER BY productId DESC LIMIT 1;";
-				productId = getCommonMapper().mapProductId(jdbcTemplate.queryForList(sqlProductId));
+				productId = Integer.toString(getCommonMapper().mapProductId(jdbcTemplate.queryForList(sqlProductId)));
 				Common.getQueryReport("saveIcon", sqlProductId);
 			} else if (mapData.get(Common.PRODUCT_ID) != null && !mapData.get(Common.PRODUCT_ID).toString().equals(Common.STRING_EMPTY)) {
-				productId = Integer.parseInt(mapData.get(Common.PRODUCT_ID).toString());
+				productId = mapData.get(Common.PRODUCT_ID).toString();
 			}
 			
-			
-			if (productId != Common.ZERO) {
-				sqlIconDownload = getCommonMapper().queryDownloadSingleInserter(iconId, Common.ADMIN, productId);
-				jdbcTemplate.update(sqlIconDownload);
-				Common.getQueryReport("saveIcon", sqlIconDownload);
+			if (productId != Common.STRING_EMPTY) {
+				if (productId.contains(Common.COMMA)) {
+					String[] productIds = productId.split(Common.COMMA);
+					for (int i = 0; i < productIds.length; i++) {
+						System.err.println(productIds[i]);
+						sqlIconDownload = getCommonMapper().queryDownloadSingleInserter(iconId, Common.ADMIN, Integer.parseInt(productIds[i]));
+						jdbcTemplate.update(sqlIconDownload);
+						Common.getQueryReport("saveIcon", sqlIconDownload);
+					}
+				} else {
+					sqlIconDownload = getCommonMapper().queryDownloadSingleInserter(iconId, Common.ADMIN, Integer.parseInt(productId));
+					jdbcTemplate.update(sqlIconDownload);
+					Common.getQueryReport("saveIcon", sqlIconDownload);
+				}
 			}
 			
 			sqlIconProperty = "INSERT INTO tbl_soho_icon_properties (propertySize, propertyFormat, propertyPrefix, iconId) " + 
@@ -358,6 +367,18 @@ public class IconDaoImpl extends HNLWebDataMapper implements IconDao {
 		List<Icon> icons = getIconMapper().mapRowsFromQuery(jdbcTemplate.queryForList(sql));
 		Common.getQueryReport("getIconInfoById", sql);
 		return icons.get(0);
+	}
+
+	@Override
+	public String getIconDisplayImageName(String iconId) {
+		// TODO Auto-generated method stub
+		String sql = "SELECT tbl_soho_icon.iconName, tbl_soho_icon_properties.propertySize, tbl_soho_icon_properties.propertyFormat, " + 
+				"tbl_soho_icon_properties.propertyPrefix FROM tbl_soho_icon_properties " + 
+				"INNER JOIN tbl_soho_icon ON tbl_soho_icon_properties.iconId = tbl_soho_icon.iconId " + 
+				"WHERE tbl_soho_icon_properties.iconId = '" + iconId + "' ORDER BY tbl_soho_icon_properties.propertyFormat DESC, tbl_soho_icon_properties.propertySize ASC LIMIT 1;";
+		String iconDisplayName = getCommonMapper().mapIconDisplayImageName(jdbcTemplate.queryForList(sql));
+		Common.getQueryReport("getIconDisplayImageName", sql);
+		return iconDisplayName;
 	}
 
 }

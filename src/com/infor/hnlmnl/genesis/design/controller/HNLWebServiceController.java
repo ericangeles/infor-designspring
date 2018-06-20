@@ -77,6 +77,7 @@ public class HNLWebServiceController {
 	public @ResponseBody Icon getIconInfoById(@RequestParam(value = "iconId", required = false) String iconId) {
 		Common.getDataReport("getIconInfoById", iconId);
 		Icon icon = iconService.getIconInfoById(iconId);
+		icon.setIconDisplayName(iconService.getIconDisplayImageName(iconId));
 		List<Icon> icons = new ArrayList<Icon>();
 		icons.add(icon);
 		

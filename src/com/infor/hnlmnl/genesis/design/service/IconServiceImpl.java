@@ -81,5 +81,12 @@ public class IconServiceImpl implements IconService {
 		Icon icon = iconDao.getIconInfoById(iconId);
 		return icon;
 	}
+
+	@Override
+	public String getIconDisplayImageName(String iconId) {
+		// TODO Auto-generated method stub
+		String iconDisplayName = iconDao.getIconDisplayImageName(iconId);
+		return iconDisplayName;
+	}
 	
 }
