@@ -182,4 +182,22 @@ public class CommonMapper {
 		
 		return icons;
 	}
+	
+	public String mapIconDisplayImageName(List<Map<String, Object>> resultSet) {
+		String iconDisplayName = Common.STRING_EMPTY;
+		
+		for (Map<String, Object> result : resultSet) {
+			String propertyFormat = (String) result.get(Common.PROPERTY_FORMAT);
+			String iconName = (String) result.get(Common.ICON_NAME);
+			String propertyPrefix = (String) result.get(Common.PROPERTY_PREFIX);
+			String propertySize = (String) result.get(Common.PROPERTY_SIZE);
+			if (!propertyFormat.isEmpty() && propertyFormat.equals(Common.EXTENSION_SVG)) {
+				iconDisplayName = iconName + propertyFormat;
+			} else if (!propertyFormat.isEmpty() && propertyFormat.equals(Common.EXTENSION_PNG)) {
+				iconDisplayName = iconName + "_" + propertyPrefix + propertySize + propertyFormat;
+			}
+		}
+		
+		return iconDisplayName;
+	}
 }
