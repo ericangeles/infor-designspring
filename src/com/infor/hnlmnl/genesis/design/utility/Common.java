@@ -27,6 +27,7 @@ public class Common {
 	public static final String ALL = "all";
 	public static final String BACKSLASH = "/";
 	public static final String BIG_Y = "Y";
+	public static final String COMMA = ",";
 	public static final String DOWNLOAD_ID = "downloadId";
 	public static final String DOWNLOAD_TIME = "downloadTime";
 	public static final String EMAIL_ADDRESS = "emailAddress";

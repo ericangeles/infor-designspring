@@ -10,6 +10,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class Icon {
 	private int iconId;
 	private String iconName;
+	private String iconDisplayName;
 	private int iconCounter;
 	private String iconStatus;
 	private IconType type;
@@ -45,6 +46,14 @@ public class Icon {
 
 	public void setIconName(String iconName) {
 		this.iconName = iconName;
+	}
+	
+	public String getIconDisplayName() {
+		return iconDisplayName;
+	}
+
+	public void setIconDisplayName(String iconDisplayName) {
+		this.iconDisplayName = iconDisplayName;
 	}
 
 	public int getIconCounter() {
