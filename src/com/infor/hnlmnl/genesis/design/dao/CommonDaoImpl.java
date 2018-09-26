@@ -65,7 +65,7 @@ private JdbcTemplate jdbcTemplate;
 		List<File> fileList = new ArrayList<File>();
 		
 		for (Icon icon: icons) {
-			String fileName = Common.PATH_DEV + Common.PATH_ICON + icon.getType().getTypeName() + Common.BACKSLASH + icon.getIconName() + Common.BACKSLASH + icon.getIconName() + Common.EXTENSION_ZIP;
+			String fileName = Common.generateFileName(icon.getType().getTypeName(), icon.getIconName());
 			Common.getDataReport("getZipPath", fileName);
 			fileList.add(new File(fileName));
 		}
@@ -92,7 +92,7 @@ private JdbcTemplate jdbcTemplate;
 			int iconType = Integer.parseInt(mapData.get(Common.ICON_TYPE).toString()) - 1;
 			String typeName = Common.ARRAY_ICON_TYPES[iconType];
 			
-			String filePath = Common.PATH_DEV + Common.PATH_ICON + typeName + Common.BACKSLASH + iconName;
+			String filePath = Common.generateFilePath(typeName, iconName);
 			
 			if (mode.equals(Common.MODE_ADD)) {
 				File folder = new File(filePath);
@@ -100,13 +100,73 @@ private JdbcTemplate jdbcTemplate;
 			}
 			
 			for (MultipartFile file : imageList) {
-				BufferedImage src = ImageIO.read(new ByteArrayInputStream(file.getBytes()));
-				String fileName = iconName + "_" + Common.SMALL_G + src.getWidth() + Common.SMALL_X + src.getHeight() + Common.EXTENSION_PNG;
-				
-				File destination = new File(filePath + Common.BACKSLASH + fileName);
-				ImageIO.write(src, Common.IMAGE_PNG, destination);
+
+				if (Common.getFileExtension(file.getOriginalFilename()).equals(Common.EXTENSION_SVG)) {
+					String fileName = iconName + Common.EXTENSION_SVG;
+					File destination = new File(filePath + Common.BACKSLASH + fileName);
+					destination.mkdirs();
+					file.transferTo(destination);
+				} else {
+					BufferedImage src = ImageIO.read(new ByteArrayInputStream(file.getBytes()));
+					String fileName = iconName + "_" + Common.SMALL_G + src.getWidth() + Common.SMALL_X + src.getHeight() + Common.EXTENSION_PNG;
+					File destination = new File(filePath + Common.BACKSLASH + fileName);
+					ImageIO.write(src, Common.IMAGE_PNG, destination);
+				}
 			}
 			response = new SoHoResponse(Common.ONE, Common.WEB_MESSAGE_OK, Common.STRING_EMPTY);
+		} catch (IOException e) {
+			response = new SoHoResponse(Common.ZERO, Common.WEB_MESSAGE_ERROR, e.getMessage());
+		}
+		
+		return response;
+	}
+
+	@Override
+	public SoHoResponse validateIconImage(List<MultipartFile> imageList) {
+		// TODO Auto-generated method stub
+		SoHoResponse response = null;
+		boolean validator = false;
+		boolean sizeIsAllowed = false;
+		try {
+			for (MultipartFile file : imageList) {
+				if (Common.getFileExtension(file.getOriginalFilename()).equals(Common.EXTENSION_SVG)) {
+					validator = true;
+				} else {
+					BufferedImage src = ImageIO.read(new ByteArrayInputStream(file.getBytes()));
+					if (src.getWidth() != src.getHeight()) {
+						validator = false;
+						break;
+					} 
+					
+					for (int i = 0; i < Common.ARRAY_ICON_SIZE.length; i++) {
+						if (src.getWidth() == Common.ARRAY_ICON_SIZE[i]) {
+							sizeIsAllowed = true;
+							break;
+						}
+						
+						if (src.getHeight() == Common.ARRAY_ICON_SIZE[i]) {
+							sizeIsAllowed = true;
+							break;
+						}
+					}
+					
+					if (sizeIsAllowed) {
+						validator = true;
+						break;
+					}
+				}
+			
+			}
+			
+			if (imageList.size() == 0) {
+				validator = true;
+			}
+			
+			if (!validator) {
+				response = new SoHoResponse(Common.ZERO, Common.WEB_MESSAGE_ERROR, "The uploaded icon file has error in dimension. Please upload based on the allowed dimensions.");
+			} else {
+				response = new SoHoResponse(Common.ONE, Common.WEB_MESSAGE_OK, Common.STRING_EMPTY);
+			}
 		} catch (IOException e) {
 			response = new SoHoResponse(Common.ZERO, Common.WEB_MESSAGE_ERROR, e.getMessage());
 		}
