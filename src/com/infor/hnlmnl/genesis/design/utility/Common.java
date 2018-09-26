@@ -50,14 +50,15 @@ public class Common {
 	public static final String IS_NEW_PRODUCT = "isNewProduct";
 	public static final String MODE_ADD = "add";
 	public static final String MODE_EDIT = "edit";
+	
 	public static final String PATH_ASSET = "assets/";
-	public static final String PATH_DEV = "E:/hnlmnl/genesis-dev/";
-	public static final String PATH_FEATURE = "designlibrary/src/";
-	public static final String PATH_ICON = PATH_FEATURE + PATH_ASSET + "icons/";
-	public static final String PATH_ICONPACKS = "iconpacks/";
-	public static final String PATH_PROD = "E:/hnlmnl/genesis-prd/";
-	public static final String PATH_QA = "E:/hnlmnl/genesis-qa/";
-	public static final String PATH_TEST = "C:/Users/jtadique/Documents/hnlmnl/genesis/";
+	public static final String PATH_DEV = "E:/hnlmnl/genesis-dev/designlibrary/src/";
+	public static final String PATH_ICON = PATH_ASSET + "icons/";
+	public static final String PATH_ICONPACKS = PATH_ASSET + "iconpacks/";
+	public static final String PATH_PROD = "E:/hnlmnl/genesis-prd/designlibrary/src/";
+	public static final String PATH_QA = "E:/hnlmnl/genesis-qa/designlibrary/src/";
+//	public static final String PATH_TEST = "C:/Users/jtadique/Documents/hnlmnl/genesis/";
+	
 	public static final String PRODUCT_ID = "productId";
 	public static final String PRODUCT_NAME = "productName";
 	public static final String PRODUCT_NEW = "productNew";
@@ -136,6 +137,10 @@ public class Common {
 			"all"
 	};
 	
+	public static final int[] ARRAY_ICON_SIZE = {
+			18, 22, 29, 40, 48, 50, 57, 58, 72, 76, 80, 100, 114, 120, 144, 152, 512, 1024
+	};
+	
 	public static List<File> generateFileListFromFileArray(String[] fileArray) {
 		List<File> fileList = new ArrayList<File>();
 		
@@ -146,15 +151,21 @@ public class Common {
 		return fileList;
 	}
 	
-	public static String generateBaseZipPath(String iconPack) {
-		
-		String zipPath = PATH_ASSET + PATH_ICONPACKS + iconPack;
+	public static String generateZipPath(String iconPack) {
+		String zipPath = PATH_PROD + PATH_ICONPACKS + iconPack;
 		return zipPath;
 	}
 	
-	public static String generateZipPath(String iconPack) {
-		String zipPath = PATH_DEV + PATH_FEATURE + PATH_ASSET + PATH_ICONPACKS + iconPack;
-		return zipPath;
+	public static String generateFilePath(String typeName, String iconName) {
+		String filePath = PATH_PROD + PATH_ICON + typeName + BACKSLASH + iconName;
+		return filePath;
+		
+	}
+	
+	public static String generateFileName(String typeName, String iconName) {
+		String fileName = PATH_PROD + PATH_ICON + typeName + BACKSLASH;
+	    fileName += iconName + BACKSLASH + iconName + EXTENSION_ZIP;
+		return fileName;
 	}
 	
 	public static File zip(List<File> files, String zipPath) {
@@ -243,5 +254,13 @@ public class Common {
 		} catch (IOException e) {
 			getErrorReport("writeLog", "Unable to write to logfile.");
 		}
+	}
+	
+	public static String getFileExtension(String filename) {
+	    int lastIndexOf = filename.lastIndexOf(".");
+	    if (lastIndexOf == -1) {
+	        return "";
+	    }
+	    return filename.substring(lastIndexOf).toLowerCase();
 	}
 }

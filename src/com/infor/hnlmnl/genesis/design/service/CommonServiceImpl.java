@@ -47,4 +47,11 @@ public class CommonServiceImpl implements CommonService {
 		return response;
 	}
 
+	@Override
+	public SoHoResponse validateIconImage(List<MultipartFile> imageList) {
+		// TODO Auto-generated method stub
+		SoHoResponse response = commonDao.validateIconImage(imageList);
+		return response;
+	}
+
 }

@@ -129,9 +129,15 @@ public class HNLWebServiceController {
 		
 		Common.getDataReport("saveIcon", iconData);
 		Common.getDataReport("saveIcon", mode);
-		
-		SoHoResponse response = iconService.saveIcon(iconData, mode);
 		List<MultipartFile> imageList = Common.createImageList(iconImage1, iconImage2, iconImage3, iconImage4);
+		
+		SoHoResponse response = commonService.validateIconImage(imageList);
+				
+		if (response.getResponse() == 0) {
+			return response;
+		}
+		
+		response = iconService.saveIcon(iconData, mode);
 		response = commonService.saveIconImage(imageList, iconData, mode);
 		
 		return response;
