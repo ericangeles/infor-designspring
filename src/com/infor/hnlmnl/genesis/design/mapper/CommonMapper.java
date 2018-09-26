@@ -46,17 +46,18 @@ public class CommonMapper {
 		}
 		
 		dataSet = dataSet.substring(0, dataSet.length() - 1);
+		System.err.println(dataSet);
 		
 		String[] dataList = dataSet.split(",");
 		return dataList;
 	}
 	
 	public List<String[]> mapIconList(String data) {
-		String dataList[] = data.split("§");
+		String dataList[] = data.split("Â§");
 		List<String[]> iconDataList = new ArrayList<String[]>();
 		
 		for (int i = 0; i < dataList.length; i++) {
-			String[] iconData = dataList[i].split("†");
+			String[] iconData = dataList[i].split("â€ ");
 			iconDataList.add(iconData);
 		}
 	
@@ -79,6 +80,7 @@ public class CommonMapper {
 		List<String> queryBuilder = new ArrayList<String>();
 		
 		for (String[] dataItem : data) {
+			System.out.println(dataItem[0]);
 			String sqlUpdateCounter = "UPDATE tbl_soho_icon " + 
 					"SET iconCounter = '" + (Integer.parseInt(dataItem[1]) + 1) + "' " + 
 					"WHERE iconId = '" + dataItem[0] + "';";

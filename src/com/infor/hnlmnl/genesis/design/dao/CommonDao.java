@@ -15,4 +15,5 @@ public interface CommonDao {
 	public Version getVersion();
 	public IconZip getZipPath(List<Icon> icons);
 	public SoHoResponse saveIconImage(List<MultipartFile> imageList, String iconData, String mode);
+	public SoHoResponse validateIconImage(List<MultipartFile> imageList);
 }

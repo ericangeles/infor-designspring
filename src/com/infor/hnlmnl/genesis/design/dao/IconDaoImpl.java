@@ -125,6 +125,7 @@ public class IconDaoImpl extends HNLWebDataMapper implements IconDao {
 	@Override
 	public IconDownloadUpdate getDownloadUpdate(String data) {
 		// TODO Auto-generated method stub
+		System.err.println(data);
 		Map<String, Object> mapData = getCommonMapper().mapRowsFromJSON(data);
 		int productId;
 		
@@ -190,8 +191,8 @@ public class IconDaoImpl extends HNLWebDataMapper implements IconDao {
 			int iconType = Integer.parseInt(mapData.get(Common.ICON_TYPE).toString());
 			
 			if (mode.equals(Common.MODE_ADD)) {
-				sqlIconInfo = "INSERT INTO tbl_soho_icon (iconName, typeId) " + 
-						"VALUES ('" + iconName + "','" + iconType + "');";
+				sqlIconInfo = "INSERT INTO tbl_soho_icon (iconName, typeId, iconStatus) " + 
+						"VALUES ('" + iconName + "','" + iconType + "','" + "inactive" + "');";
 				jdbcTemplate.update(sqlIconInfo);
 				Common.getQueryReport("saveIcon", sqlIconInfo);
 			}
@@ -204,9 +205,9 @@ public class IconDaoImpl extends HNLWebDataMapper implements IconDao {
 				iconId = mapData.get("iconId").toString();
 			}
 			
-			if (mapData.get(Common.HAS_PRODUCT_NEW) == Common.BIG_Y) {
+			if (mapData.get(Common.HAS_PRODUCT_NEW).equals(Common.BIG_Y)) {
 				String productNew = mapData.get(Common.PRODUCT_NEW).toString();
-				sqlIconProduct = "INSERT INTO tbl_soho_product (productNew) " + 
+				sqlIconProduct = "INSERT INTO tbl_soho_product (productName) " + 
 						"VALUES ('" + productNew + "');";
 				jdbcTemplate.update(sqlIconProduct);
 				Common.getQueryReport("saveIcon", sqlIconProduct);
@@ -315,7 +316,7 @@ public class IconDaoImpl extends HNLWebDataMapper implements IconDao {
 				}
 			}
 			
-			if (mapData.get(Common.HAS_NEW_SVG).equals(Common.BIG_Y) && mapData.get(Common.HAS_NEW_PNG).equals(Common.BIG_Y)) {
+			if (mapData.get(Common.HAS_NEW_SVG).equals(Common.BIG_Y) || mapData.get(Common.HAS_NEW_PNG).equals(Common.BIG_Y)) {
 				sqlIconProperty = sqlIconProperty.substring(0, sqlIconProperty.length() - 2);
 				sqlIconProperty += ";";
 				jdbcTemplate.update(sqlIconProperty);
@@ -324,16 +325,22 @@ public class IconDaoImpl extends HNLWebDataMapper implements IconDao {
 			
 			if (mapData.get(Common.TAGS) != null) {
 				String[] tags = getCommonMapper().mapTagsFromRows(mapData.get(Common.TAGS).toString());
-				
-				String sqlTagChecker = "SELECT tagName FROM tbl_soho_icon_tag WHERE iconId = '" + iconId +"';";
-				String[] tagExistList = getCommonMapper().mapTagsFromRows(jdbcTemplate.queryForList(sqlTagChecker));
-				
 				sqlIconTag = "INSERT INTO tbl_soho_icon_tag (tagName, iconId) " + 
 						"VALUES ";
 				
-				for (int i = 0; i < tags.length; i++) {
-					if (!Arrays.asList(tagExistList).contains(tags[i])) {
-						sqlIconTag += "('" + tags[i] + "','" + iconId + "') ,";
+				if (!mode.equals(Common.MODE_ADD)) {
+					String sqlTagChecker = "SELECT tagName FROM tbl_soho_icon_tag WHERE iconId = '" + iconId +"';";
+					String[] tagExistList = getCommonMapper().mapTagsFromRows(jdbcTemplate.queryForList(sqlTagChecker));
+					
+					for (int i = 0; i < tags.length; i++) {
+						if (!Arrays.asList(tagExistList).contains(tags[i])) {
+							sqlIconTag += "('" + tags[i].trim() + "','" + iconId + "') ,";
+						}
+					}
+				} else {
+					sqlIconTag += "('" + iconName + "','" + iconId + "') ,";
+					for (int i = 0; i < tags.length; i++) {
+						sqlIconTag += "('" + tags[i].trim() + "','" + iconId + "') ,";
 					}
 				}
 				
